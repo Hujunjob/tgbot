@@ -7,6 +7,8 @@ const {
     handleBag,
     handleProfile,
     handleMarket,
+    handleWallet,
+    handleTransfer,
     handleText,
     handleSticker,
     handlePhoto
@@ -82,6 +84,9 @@ bot.command('stop', (ctx) => {
 
 bot.command('market', handleMarket);
 
+bot.command('wallet', handleWallet);
+
+bot.command('transfer', handleTransfer);
 
 bot.command('pay', handlePay);
 
