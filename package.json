@@ -5,6 +5,16 @@
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
+    "dev": "NODE_ENV=development node bot.js",
+    "prod": "NODE_ENV=production node bot.js",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop starminer-bot",
+    "pm2:restart": "pm2 restart starminer-bot",
+    "pm2:reload": "pm2 reload starminer-bot",
+    "pm2:delete": "pm2 delete starminer-bot",
+    "pm2:status": "pm2 status starminer-bot",
+    "pm2:logs": "pm2 logs starminer-bot",
+    "pm2:monit": "pm2 monit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

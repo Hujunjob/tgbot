@@ -20,7 +20,19 @@ const {
     handleWithdraw
 } = require('./payment');
 const { BOT_COMMANDS, ERROR_MESSAGES } = require('./config');
+const { logError } = require('./utils');
 require('dotenv').config();
+
+// 设置进程标题
+process.title = 'starminer-bot';
+
+// 优雅退出处理
+const gracefulShutdown = (signal) => {
+    console.log(`收到 ${signal} 信号，正在优雅关闭...`);
+    closeDatabase();
+    bot.stop(signal);
+    process.exit(0);
+};
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -90,27 +102,40 @@ bot.on('sticker', handleSticker);
 bot.on('photo', handlePhoto);
 
 bot.catch((err, ctx) => {
-    console.error('Bot错误:', err);
-    ctx.reply(ERROR_MESSAGES.GENERAL_ERROR);
+    logError('Bot全局错误', err);
+    if (ctx && ctx.reply) {
+        ctx.reply(ERROR_MESSAGES.GENERAL_ERROR);
+    }
 });
 
 bot.telegram.setMyCommands(BOT_COMMANDS);
 
 
 bot.launch().then(() => {
-    console.log('StarMiner Bot 已启动! 🚀');
-    console.log('数据库已连接');
-    console.log('命令菜单已设置完成');
+    const startTime = new Date().toISOString();
+    console.log(`[${startTime}] StarMiner Bot 已启动! 🚀`);
+    console.log(`[${startTime}] 进程ID: ${process.pid}`);
+    console.log(`[${startTime}] Node.js版本: ${process.version}`);
+    console.log(`[${startTime}] 运行环境: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`[${startTime}] 数据库已连接`);
+    console.log(`[${startTime}] 命令菜单已设置完成`);
 }).catch((err) => {
-    console.error('启动失败:', err);
+    logError('启动失败', err);
+    process.exit(1);
 });
 
 
-process.once('SIGINT', () => {
-    closeDatabase();
-    bot.stop('SIGINT');
+// 处理进程信号
+process.once('SIGINT', () => gracefulShutdown('SIGINT'));
+process.once('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.once('SIGQUIT', () => gracefulShutdown('SIGQUIT'));
+
+// 处理未捕获的异常
+process.on('uncaughtException', (err) => {
+    logError('未捕获的异常', err);
+    gracefulShutdown('uncaughtException');
 });
-process.once('SIGTERM', () => {
-    closeDatabase();
-    bot.stop('SIGTERM');
+
+process.on('unhandledRejection', (reason, promise) => {
+    logError('未处理的Promise拒绝', { reason, promise });
 });
