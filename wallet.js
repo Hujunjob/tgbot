@@ -103,8 +103,8 @@ async function createTransferTransaction(userId, amount, destinationAddress) {
         };
 
         // 发送交易请求
-        const result = await wallet.connector.sendTransaction(transaction);
-        return result;
+        // const result = await wallet.connector.sendTransaction(transaction);
+        // return result;
     } catch (error) {
         console.error('创建转账交易失败:', error);
         throw error;
