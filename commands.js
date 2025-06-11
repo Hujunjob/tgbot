@@ -1,4 +1,4 @@
-const { getUser, updateUser, getPlayerGifts, calculateLevel } = require('./database');
+const { getUser, updateUser, calculateLevel } = require('./database');
 const { WELCOME_MESSAGE, ERROR_MESSAGES } = require('./config');
 
 async function handleIntro(ctx) {
@@ -41,37 +41,6 @@ async function handleProfile(ctx) {
     }
 }
 
-async function handleGift(ctx) {
-    const userId = ctx.from.id;
-    
-    try {
-        const gifts = await getPlayerGifts(userId);
-        
-        if (gifts.length === 0) {
-            ctx.reply('🎁 我的礼品\n\n暂时没有礼品，继续游戏来获得礼品吧！\n\n💡 提示：完成任务、升级或充值可以获得礼品奖励');
-            return;
-        }
-        
-        const giftCounts = {};
-        gifts.forEach(gift => {
-            const key = `${gift.gift_name} (${gift.gift_type})`;
-            giftCounts[key] = (giftCounts[key] || 0) + gift.quantity;
-        });
-        
-        let message = '🎁 我的礼品\n\n';
-        Object.entries(giftCounts).forEach(([giftInfo, totalQuantity]) => {
-            message += `🎁 ${giftInfo}: ${totalQuantity}\n`;
-        });
-        
-        message += `\n📦 总礼品数量: ${Object.keys(giftCounts).length} 种`;
-        
-        ctx.reply(message);
-    } catch (error) {
-        console.error('Error getting gifts:', error);
-        ctx.reply(ERROR_MESSAGES.GIFT_ERROR);
-    }
-}
-
 async function handleMarket(ctx) {
     ctx.reply('正在建设中，敬请期待...');
 }
@@ -95,7 +64,6 @@ module.exports = {
     handleStart,
     handleBag,
     handleProfile,
-    handleGift,
     handleMarket,
     handleText,
     handleSticker,

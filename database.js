@@ -14,15 +14,6 @@ function initializeDatabase() {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
         
-        db.run(`CREATE TABLE IF NOT EXISTS gifts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            gift_name TEXT NOT NULL,
-            gift_type TEXT NOT NULL,
-            quantity INTEGER DEFAULT 1,
-            received_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (user_id)
-        )`);
     });
     console.log('初始化数据库');
 }
@@ -75,18 +66,6 @@ function updateUser(userId, data) {
     });
 }
 
-function getPlayerGifts(userId) {
-    return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM gifts WHERE user_id = ? ORDER BY received_at DESC', [userId], (err, rows) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(rows || []);
-        });
-    });
-}
-
 function calculateLevel(experience) {
     return Math.floor(experience / EXP_PER_LEVEL) + 1;
 }
@@ -99,7 +78,6 @@ module.exports = {
     initializeDatabase,
     getUser,
     updateUser,
-    getPlayerGifts,
     calculateLevel,
     closeDatabase
 };

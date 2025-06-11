@@ -6,7 +6,6 @@ const {
     handleStart,
     handleBag,
     handleProfile,
-    handleGift,
     handleMarket,
     handleText,
     handleSticker,
@@ -81,7 +80,6 @@ bot.command('stop', (ctx) => {
     ctx.reply(result);
 });
 
-bot.command('gift', handleGift);
 bot.command('market', handleMarket);
 
 
